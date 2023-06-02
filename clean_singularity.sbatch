@@ -21,7 +21,7 @@
 #SBATCH --job-name=clean_training
 
 # CHANGE_ME: set ALPHAFOLD_DIR same as "SBATCH -D" value
-export ALPHAFOLD_DIR=/tahoma/emsle60535/clean_gpu
+export CLEAN_DIR=/tahoma/emsle60535/clean_gpu
 export TMPDIR=/big_scratch/${SLURM_JOB_ID}
 
 # CHANGE_ME: Tailor this to be input FASTA file:
@@ -34,18 +34,22 @@ export TMPDIR=/big_scratch/${SLURM_JOB_ID}
 source /tahoma/emsle60535/singularity-venv/bin/activate
 
 mkdir $TMPDIR
+mkdir $TMPDIR/model
+mkdir $TMPDIR/distance_map
 echo $TMPDIR
+
+cp $CLEAN_DIR/singularity/*.csv $TMPDIR/
 
 ### Check values of some environment variables
 echo SLURM_JOB_GPUS=$SLURM_JOB_GPUS
-echo ALPHAFOLD_DIR=$ALPHAFOLD_DIR
+echo CLEAN_DIR=$CLEAN_DIR
 
 export XLA_PYTHON_CLIENT_MEM_FRACTION=10
 export TF_FORCE_UNIFIED_MEMORY=1
 
 # Run AlphaFold; default is to use GPUs, i.e. "--use_gpu" can be omitted.
 # module load python
-python3 ${ALPHAFOLD_DIR}/singularity/run_singularity.py \
+python3 ${CLEAN_DIR}/singularity/run_singularity.py \
     --use_gpu \
     --learning_rate=5e-4 \
     --epoch=2000 \
